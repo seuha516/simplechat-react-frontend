@@ -17,4 +17,4 @@
   - 방장 기능: 방 설정 변경, 강제퇴장, 방장 넘기기
 
 ## Other
-- [SimpleChat_BackEnd](https://github.com/seuha516/SimpleChat_BackEnd)
+- [SimpleChat_BackEnd](https://github.com/seuha516/simplechat-express-backend)
