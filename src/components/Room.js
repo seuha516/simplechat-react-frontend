@@ -471,13 +471,14 @@ const RealRoom = ({ socket }) => {
   useEffect(() => {
     socket.emit('tryRoom', location.search.substring(1));
     socket.on('allowRoom', (data) => {
-      if (data && data !== window.prompt('비밀번호를 입력하세요.')) {
-        alert('비밀번호가 틀렸습니다.');
+      if (!data) return;
+      const password = data.passwordRequired ? window.prompt('비밀번호를 입력하세요.') : undefined;
+      if (data.passwordRequired && password === null) {
         history.push('/');
-      } else {
-        socket.emit('joinRoom', { user: me, code: location.search.substring(1) });
-        setPass(true);
+        return;
       }
+      socket.emit('joinRoom', { code: location.search.substring(1), password });
+      setPass(true);
     });
     socket.on('roomInfoChange', (data) => dispatch(setRoomInfo(data)));
     socket.on('roomMemberChange', (data) => {
@@ -538,7 +539,7 @@ const RealRoom = ({ socket }) => {
                       {roomInfo.name}
                     </RoomTitle>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {roomInfo.password === '' ? (
+                      {!roomInfo.locked ? (
                         <AiFillUnlock style={{ cursor: 'pointer' }} onClick={() => onClickLock(false)} />
                       ) : (
                         <AiFillLock style={{ cursor: 'pointer' }} onClick={() => onClickLock(true)} />
@@ -553,7 +554,7 @@ const RealRoom = ({ socket }) => {
                   <>
                     <RoomTitle>{roomInfo.name}</RoomTitle>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {roomInfo.password === '' ? <AiFillUnlock /> : <AiFillLock />}
+                      {!roomInfo.locked ? <AiFillUnlock /> : <AiFillLock />}
                       <div>{`${roomMember.length} / ${roomInfo.maximum}`}</div>
                     </div>
                   </>
@@ -653,7 +654,7 @@ const NoticeMessage = ({ data }) => {
     return (
       <NoticeMessageWrapper color="#bff9ff">
         <strong>{`방 설정 변경: `}</strong>{' '}
-        {`${data.target.name} / ${data.target.password === '' ? '공개방' : '비밀방'} / 최대 ${data.target.maximum}인`}
+        {`${data.target.name} / ${data.target.locked ? '비밀방' : '공개방'} / 최대 ${data.target.maximum}인`}
       </NoticeMessageWrapper>
     );
   } else if (data.type === 'king') {

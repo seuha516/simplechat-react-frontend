@@ -30,7 +30,7 @@ sagaMiddleware.run(rootSaga);
 loadUser();
 document.getElementById('root').setAttribute('spellcheck', 'false');
 
-const socket = io.connect(`${process.env.REACT_APP_API_URL}`);
+const socket = io.connect(`${process.env.REACT_APP_API_URL}`, { withCredentials: true });
 socket.emit('init', store.getState().user ? store.getState().user.user : null);
 socket.on('introduce', (data) => store.dispatch(setMe(data)));
 

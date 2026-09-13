@@ -467,7 +467,7 @@ const RoomInfo = styled.div`
 `;
 const LockIcon = styled(AiFillLock)`
   ${(props) =>
-    props.password === '' &&
+    !props.locked &&
     css`
       visibility: hidden;
     `}
@@ -588,7 +588,7 @@ const RealHome = ({ socket }) => {
   const onFastMatch = () => {
     let possibleRoom = [];
     room.map((x) => {
-      if (x.password === '' && x.member.length < x.maximum) possibleRoom.push(x.code);
+      if (!x.locked && x.member.length < x.maximum) possibleRoom.push(x.code);
       return x;
     });
     if (possibleRoom.length === 0) {
@@ -772,7 +772,7 @@ const RealHome = ({ socket }) => {
                 <Room key={x.code} color={x.color} full={x.member.length >= x.maximum} onClick={() => onClickRoom(x)}>
                   <RoomTitle>{x.name}</RoomTitle>
                   <RoomInfo>
-                    <LockIcon password={x.password} />
+                    <LockIcon locked={x.locked} />
                     <People>
                       <IoPeopleCircleOutline />
                       {`${x.member.length} / ${x.maximum}`}
